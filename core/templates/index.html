@@ -1,0 +1,1024 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101310">
+<title>FOOTY — Футбол без зайвого</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+:root {
+  --bg: #101310;
+  --panel: #191d1a;
+  --panel2: #202520;
+  --line: #2c322d;
+  --muted: #9aa49a;
+  --accent: #c5f45b;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: #f4f6f2;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+}
+button, input { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible, a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 15px;
+}
+.muted { color: var(--muted); }
+.accent { color: var(--accent); }
+.brand-mark {
+  width: 38px; height: 38px;
+  display: grid; place-items: center;
+  background: var(--accent);
+  color: #101310; border-radius: 11px;
+  font-weight: 1000;
+}
+.header-search {
+  width: min(100%, 620px);
+  background: #202520;
+  border: 1px solid #363d36;
+  border-radius: 15px;
+  padding: 14px 18px;
+  color: white;
+}
+.header-search:focus { border-color: var(--accent); outline: none; }
+.sport {
+  padding: 12px 15px;
+  color: #aeb7ad;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+}
+.sport.active, .sport:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.country-btn {
+  width: 100%;
+  display: flex; justify-content: space-between;
+  align-items: center; gap: 8px;
+  text-align: left;
+  padding: 13px 10px;
+  border-radius: 8px;
+  color: #e4e8e1;
+  font-size: 13px; font-weight: 800;
+  letter-spacing: .035em;
+  transition: background .2s, color .2s;
+}
+.country-btn:hover, .country-btn.open {
+  background: #252c24;
+  color: var(--accent);
+}
+.chevron { transition: transform .2s; color: #858e83; }
+.country-btn.open .chevron { transform: rotate(180deg); }
+.country-submenu {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .25s ease;
+}
+.country-submenu.open { grid-template-rows: 1fr; }
+.country-submenu > div { overflow: hidden; }
+.sub-link {
+  width: 100%;
+  display: block;
+  text-align: left;
+  color: #aeb7ad;
+  padding: 9px 10px 9px 19px;
+  border-left: 1px solid #3b4538;
+  margin-left: 13px;
+  font-size: 12px;
+  transition: color .2s, border-color .2s;
+}
+.sub-link:hover, .sub-link.active {
+  color: var(--accent);
+  border-left: 2px solid var(--accent);
+}
+.hero {
+  min-height: 355px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #263127;
+}
+.hero img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.hero::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(0deg, #080b08 0%, #080b08d9 22%, #080b0870 57%, #080b0810 100%);
+}
+.hero-copy {
+  position: absolute;
+  z-index: 1;
+  left: 0; right: 0; bottom: 0;
+  padding: 25px;
+}
+.tag {
+  display: inline-block;
+  background: var(--accent);
+  color: #101310;
+  font-size: 10px; font-weight: 900;
+  letter-spacing: .08em;
+  padding: 6px 9px; border-radius: 5px;
+}
+.match {
+  background: var(--panel2);
+  border: 1px solid #303730;
+  border-radius: 12px;
+  padding: 14px;
+  transition: border-color .2s, transform .2s;
+}
+.match:hover { border-color: #65734f; transform: translateY(-2px); }
+.team {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 750;
+}
+.team-icon {
+  display: grid; place-items: center;
+  width: 29px; height: 29px;
+  border-radius: 50%; background: #303830;
+  flex-shrink: 0;
+}
+.status {
+  font-size: 10px; font-weight: 900;
+  padding: 4px 7px; border-radius: 5px;
+}
+.live { background: #e33c45; color: white; }
+.upcoming { background: #334326; color: var(--accent); }
+.finished { background: #363d37; color: #c3c9c1; }
+.news-item {
+  padding: 13px 0;
+  border-bottom: 1px solid var(--line);
+}
+.news-item:last-child { border-bottom: 0; }
+.news-item a {
+  color: #edf0eb;
+  font-size: 13px; font-weight: 700;
+  line-height: 1.5; text-decoration: none;
+}
+.news-item a:hover { color: var(--accent); }
+.all-news {
+  display: block; width: 100%;
+  text-align: center; padding: 11px;
+  border: 1px solid #394235;
+  border-radius: 10px;
+  color: var(--accent); font-size: 12px; font-weight: 800;
+  transition: background .2s;
+}
+.all-news:hover { background: #252c24; }
+
+/* Calendar */
+.calendar {
+  background: #191d1a;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  padding: 15px;
+}
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+.weekday {
+  text-align: center;
+  color: #7f8a7e;
+  font-size: 10px; font-weight: 800;
+  padding: 7px 0;
+}
+.calendar-day {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  min-width: 0;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  gap: 3px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  color: #e5e9e2;
+  font-size: 12px;
+  background: transparent;
+  transition: background .15s, border-color .15s;
+}
+.calendar-day:hover {
+  background: #2a3227;
+  border-color: #526147;
+}
+.calendar-day.today {
+  border-color: var(--accent);
+  background: #293522;
+  color: var(--accent);
+  font-weight: 900;
+}
+.calendar-day.selected {
+  background: var(--accent);
+  color: #101310;
+  font-weight: 900;
+}
+.calendar-day.other-month { color: #596158; }
+.match-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+.calendar-day.selected .match-dot { background: #101310; }
+.calendar-day.today:not(.selected) .match-dot { background: var(--accent); }
+.calendar-day.empty { pointer-events: none; }
+.calendar-nav {
+  display: grid; place-items: center;
+  width: 31px; height: 31px;
+  border-radius: 8px;
+  color: #dfe5dc; background: #252b25;
+}
+.calendar-nav:hover { background: #343d31; color: var(--accent); }
+.calendar-selected {
+  background: #202720; border-radius: 9px;
+  padding: 10px; margin-top: 12px;
+  font-size: 11px; color: #aeb7ad;
+}
+.overlay {
+  position: fixed; inset: 0; z-index: 50;
+  display: grid; place-items: center;
+  padding: 20px; background: #000b;
+  backdrop-filter: blur(8px);
+}
+.dialog {
+  width: min(100%, 410px);
+  background: var(--panel);
+  border: 1px solid #394336;
+  border-radius: 20px; padding: 25px;
+}
+@media (min-width: 1024px) {
+  .right-column { position: sticky; top: 16px; }
+}
+@media (max-width: 767px) {
+  .hero { min-height: 320px; }
+  .hero-copy { padding: 18px; }
+  .header-top { flex-wrap: wrap; }
+  .header-search-wrap { order: 3; width: 100%; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Повідомлення та модальне вікно -->
+<div id="dialogOverlay" class="overlay hidden" role="dialog" aria-modal="true">
+  <div class="dialog">
+    <h2 id="dialogTitle" class="text-xl font-black mb-3">FOOTY</h2>
+    <p id="dialogText" class="muted text-sm leading-6 mb-5"></p>
+    <button onclick="closeDialog()" class="w-full rounded-xl py-3 font-extrabold text-black" style="background:var(--accent)">Зрозуміло</button>
+  </div>
+</div>
+
+<header class="border-b border-gray-800 bg-[#141814]">
+  <div class="max-w-[1600px] mx-auto px-4 sm:px-6 pt-4">
+    <div class="header-top flex items-center justify-between gap-5">
+      <button onclick="goHome()" class="flex items-center gap-2 text-2xl font-black shrink-0" aria-label="FOOTY — головна">
+        <span class="brand-mark">F</span>
+        FOOTY<span class="accent">.</span>
+      </button>
+
+      <!-- Пошук залишається по центру -->
+      <div class="header-search-wrap flex-1 flex justify-center">
+        <div class="relative w-full flex justify-center">
+          <input id="searchInput" class="header-search"
+            type="search" placeholder="⌕  Команда, матч або гравець..."
+            aria-label="Пошук команди, матчу або гравця">
+          <div id="searchResults" class="hidden absolute top-full mt-2 z-30 w-full max-w-[620px] panel p-3 text-sm shadow-xl"></div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <button onclick="showDialog('Налаштування','Налаштування можна буде підключити в наступній версії порталу.')" class="rounded-xl border border-gray-700 px-3 py-2 text-sm hover:bg-[#202520]" aria-label="Налаштування">
+          ⚙ <span class="hidden sm:inline">Налаштування</span>
+        </button>
+        <button onclick="showDialog('Вхід','Авторизація ще не підключена. Це демонстраційна версія FOOTY.')" class="rounded-xl px-3 py-2 text-sm font-extrabold text-black" style="background:var(--accent)">
+          Увійти
+        </button>
+      </div>
+    </div>
+
+    <nav class="flex gap-1 overflow-x-auto mt-4" aria-label="Спортивні розділи">
+      <button class="sport active" data-sport="Футбол">⚽ Футбол</button>
+      <button class="sport" data-sport="Баскетбол">🏀 Баскетбол</button>
+      <button class="sport" data-sport="Теніс">🎾 Теніс</button>
+      <button class="sport" data-sport="Хокей">🏒 Хокей</button>
+      <button class="sport" data-sport="Формула-1">🏎 Формула-1</button>
+    </nav>
+  </div>
+</header>
+
+<main class="max-w-[1600px] mx-auto px-4 sm:px-6 py-6">
+  <div class="flex flex-wrap justify-between items-end gap-3 mb-5">
+    <div>
+      <p class="text-xs font-extrabold tracking-[.18em] accent mb-1">ФУТБОЛЬНИЙ ЦЕНТР</p>
+      <h1 id="pageHeading" class="text-2xl sm:text-3xl font-black tracking-tight">Усе про футбол. В одному місці.</h1>
+    </div>
+    <span class="text-xs muted">Новини · Матчі · Турніри</span>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
+
+    <!-- ЛІВА КОЛОНКА: країни та турніри -->
+    <aside class="md:col-span-3 lg:col-span-2 order-2 md:order-1">
+      <section class="panel p-3">
+        <div class="flex items-center justify-between px-2 py-2 mb-2">
+          <h2 class="font-black text-sm">ТУРНІРИ</h2>
+          <span class="text-[10px] muted tracking-widest">ЄВРОПА</span>
+        </div>
+
+        <div id="countryList">
+          <div class="country-group">
+            <button class="country-btn" aria-expanded="false" data-country="ukraine">
+              <span>УКРАЇНА</span><span class="chevron">⌄</span>
+            </button>
+            <div class="country-submenu"><div>
+              <button class="sub-link" data-league="Україна" data-section="Новини">Новини</button>
+              <button class="sub-link" data-league="Україна" data-section="Розклад матчів">Розклад матчів</button>
+              <button class="sub-link" data-league="Україна" data-section="Статистика">Статистика</button>
+              <button class="sub-link" data-league="Україна" data-section="Таблиця">Таблиця УПЛ</button>
+              <button class="sub-link" data-league="Україна" data-section="Кубок України">Кубок України</button>
+            </div></div>
+          </div>
+
+          <div class="country-group">
+            <button class="country-btn" aria-expanded="false" data-country="england">
+              <span>АНГЛІЯ</span><span class="chevron">⌄</span>
+            </button>
+            <div class="country-submenu"><div>
+              <button class="sub-link" data-league="Англія" data-section="Новини">Новини</button>
+              <button class="sub-link" data-league="Англія" data-section="Розклад матчів">Розклад АПЛ</button>
+              <button class="sub-link" data-league="Англія" data-section="Статистика">Статистика</button>
+              <button class="sub-link" data-league="Англія" data-section="Таблиця">Таблиця АПЛ</button>
+              <button class="sub-link" data-league="Англія" data-section="Кубок Англії">Кубок Англії</button>
+            </div></div>
+          </div>
+
+          <div class="country-group">
+            <button class="country-btn" aria-expanded="false" data-country="spain">
+              <span>ІСПАНІЯ</span><span class="chevron">⌄</span>
+            </button>
+            <div class="country-submenu"><div>
+              <button class="sub-link" data-league="Іспанія" data-section="Новини">Новини</button>
+              <button class="sub-link" data-league="Іспанія" data-section="Розклад матчів">Розклад Ла Ліги</button>
+              <button class="sub-link" data-league="Іспанія" data-section="Статистика">Статистика</button>
+              <button class="sub-link" data-league="Іспанія" data-section="Таблиця">Таблиця</button>
+              <button class="sub-link" data-league="Іспанія" data-section="Кубок Іспанії">Кубок Іспанії</button>
+            </div></div>
+          </div>
+
+          <div class="country-group">
+            <button class="country-btn" aria-expanded="false" data-country="italy">
+              <span>ІТАЛІЯ</span><span class="chevron">⌄</span>
+            </button>
+            <div class="country-submenu"><div>
+              <button class="sub-link" data-league="Італія" data-section="Новини">Новини</button>
+              <button class="sub-link" data-league="Італія" data-section="Розклад матчів">Розклад Серія А</button>
+              <button class="sub-link" data-league="Італія" data-section="Статистика">Статистика</button>
+              <button class="sub-link" data-league="Італія" data-section="Таблиця">Таблиця</button>
+              <button class="sub-link" data-league="Італія" data-section="Кубок Італії">Кубок Італії</button>
+            </div></div>
+          </div>
+
+          <div class="country-group">
+            <button class="country-btn" aria-expanded="false" data-country="germany">
+              <span>НІМЕЧЧИНА</span><span class="chevron">⌄</span>
+            </button>
+            <div class="country-submenu"><div>
+              <button class="sub-link" data-league="Німеччина" data-section="Новини">Новини</button>
+              <button class="sub-link" data-league="Німеччина" data-section="Розклад матчів">Розклад Бундесліги</button>
+              <button class="sub-link" data-league="Німеччина" data-section="Статистика">Статистика</button>
+              <button class="sub-link" data-league="Німеччина" data-section="Таблиця">Таблиця</button>
+              <button class="sub-link" data-league="Німеччина" data-section="Кубок Німеччини">Кубок Німеччини</button>
+            </div></div>
+          </div>
+
+          <div class="country-group">
+            <button class="country-btn" aria-expanded="false" data-country="france">
+              <span>ФРАНЦІЯ</span><span class="chevron">⌄</span>
+            </button>
+            <div class="country-submenu"><div>
+              <button class="sub-link" data-league="Франція" data-section="Новини">Новини</button>
+              <button class="sub-link" data-league="Франція" data-section="Розклад матчів">Розклад Ліги 1</button>
+              <button class="sub-link" data-league="Франція" data-section="Статистика">Статистика</button>
+              <button class="sub-link" data-league="Франція" data-section="Таблиця">Таблиця</button>
+              <button class="sub-link" data-league="Франція" data-section="Кубок Франції">Кубок Франції</button>
+            </div></div>
+          </div>
+
+          <div class="country-group">
+            <button class="country-btn" aria-expanded="false" data-country="ucl">
+              <span>ЛІГА ЧЕМПІОНІВ</span><span class="chevron">⌄</span>
+            </button>
+            <div class="country-submenu"><div>
+              <button class="sub-link" data-league="Ліга чемпіонів" data-section="Новини">Новини</button>
+              <button class="sub-link" data-league="Ліга чемпіонів" data-section="Розклад матчів">Розклад матчів</button>
+              <button class="sub-link" data-league="Ліга чемпіонів" data-section="Статистика">Статистика</button>
+              <button class="sub-link" data-league="Ліга чемпіонів" data-section="Таблиця">Турнірна таблиця</button>
+            </div></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="panel p-4 mt-4">
+        <p class="text-xs muted mb-2">FOOTY РЕКОМЕНДУЄ</p>
+        <p class="font-black text-sm leading-5">Футбол — більше, ніж рахунок.</p>
+        <p class="muted text-xs leading-5 mt-2">Стеж за матчами, командами та історіями сезону.</p>
+      </div>
+    </aside>
+
+    <!-- ЦЕНТРАЛЬНА КОЛОНКА -->
+    <section class="md:col-span-9 lg:col-span-7 order-1 md:order-2 min-w-0">
+      <div id="homeContent">
+
+        <!-- Головна новина -->
+        <article class="hero">
+          <img
+            src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1500&q=85"
+            alt="Футбольний матч на стадіоні"
+            onerror="this.style.display='none'">
+          <div class="hero-copy">
+            <span class="tag">ГОЛОВНА НОВИНА</span>
+            <p class="text-xs uppercase tracking-widest text-gray-300 mt-4 mb-2">ЄВРОПЕЙСЬКИЙ ФУТБОЛ · ОГЛЯД</p>
+            <h2 class="text-2xl sm:text-4xl font-black leading-tight max-w-2xl">
+              Велика футбольна осінь: попереду вирішальні матчі та нові інтриги
+            </h2>
+            <p class="text-sm text-gray-300 mt-3 max-w-xl">
+              Головні події сезону, ключові протистояння та команди, за якими варто стежити.
+            </p>
+            <button class="mt-4 text-sm font-extrabold accent" onclick="showDialog('Головна новина','Повний текст матеріалу можна буде додати, коли буде готова система публікацій.')">
+              Читати новину <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </article>
+
+        <!-- Матчі дня -->
+        <section class="mt-7">
+          <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+            <div>
+              <p class="text-xs accent font-extrabold tracking-widest mb-1">НЕ ПРОПУСТИ</p>
+              <h2 class="text-xl font-black">Матчі дня</h2>
+            </div>
+            <div class="flex gap-1 text-xs">
+              <button class="match-filter rounded-lg px-3 py-2 bg-[#293126] accent font-bold" data-filter="all">Усі</button>
+              <button class="match-filter rounded-lg px-3 py-2 muted hover:bg-[#202520]" data-filter="live">Live</button>
+              <button class="match-filter rounded-lg px-3 py-2 muted hover:bg-[#202520]" data-filter="upcoming">Майбутні</button>
+            </div>
+          </div>
+
+          <div id="matchList" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+            <article class="match" data-status="live">
+              <div class="flex justify-between items-center mb-4">
+                <span class="text-[10px] muted font-bold">АНГЛІЯ · АПЛ</span>
+                <span class="status live">LIVE 67′</span>
+              </div>
+              <div class="flex items-center justify-between gap-2">
+                <div class="team"><span class="team-icon">🔴</span>Arsenal</div>
+                <span class="text-xl font-black">2 : 1</span>
+                <div class="team"><span class="team-icon">🔵</span>Chelsea</div>
+              </div>
+              <p class="muted text-[10px] mt-4">Демо-рахунок · Не live-дані</p>
+            </article>
+
+            <article class="match" data-status="upcoming">
+              <div class="flex justify-between items-center mb-4">
+                <span class="text-[10px] muted font-bold">ІСПАНІЯ · ЛА ЛІГА</span>
+                <span class="status upcoming">20:00</span>
+              </div>
+              <div class="flex items-center justify-between gap-2">
+                <div class="team"><span class="team-icon">⚪</span>Real Madrid</div>
+                <span class="text-sm muted">VS</span>
+                <div class="team"><span class="team-icon">🔵</span>Barcelona</div>
+              </div>
+              <p class="muted text-[10px] mt-4">Час наведено для демонстрації</p>
+            </article>
+
+            <article class="match" data-status="upcoming">
+              <div class="flex justify-between items-center mb-4">
+                <span class="text-[10px] muted font-bold">ІТАЛІЯ · СЕРІЯ А</span>
+                <span class="status upcoming">21:45</span>
+              </div>
+              <div class="flex items-center justify-between gap-2">
+                <div class="team"><span class="team-icon">🔵</span>Inter</div>
+                <span class="text-sm muted">VS</span>
+                <div class="team"><span class="team-icon">🔴</span>AC Milan</div>
+              </div>
+              <p class="muted text-[10px] mt-4">Час наведено для демонстрації</p>
+            </article>
+
+            <article class="match" data-status="upcoming">
+              <div class="flex justify-between items-center mb-4">
+                <span class="text-[10px] muted font-bold">АНГЛІЯ · АПЛ</span>
+                <span class="status upcoming">18:30</span>
+              </div>
+              <div class="flex items-center justify-between gap-2">
+                <div class="team"><span class="team-icon">🔴</span>Liverpool</div>
+                <span class="text-sm muted">VS</span>
+                <div class="team"><span class="team-icon">🔵</span>Man City</div>
+              </div>
+              <p class="muted text-[10px] mt-4">Час наведено для демонстрації</p>
+            </article>
+
+            <article class="match" data-status="upcoming">
+              <div class="flex justify-between items-center mb-4">
+                <span class="text-[10px] muted font-bold">НІМЕЧЧИНА · БУНДЕСЛІГА</span>
+                <span class="status upcoming">19:30</span>
+              </div>
+              <div class="flex items-center justify-between gap-2">
+                <div class="team"><span class="team-icon">🔴</span>Bayern</div>
+                <span class="text-sm muted">VS</span>
+                <div class="team"><span class="team-icon">⚫</span>Dortmund</div>
+              </div>
+              <p class="muted text-[10px] mt-4">Час наведено для демонстрації</p>
+            </article>
+
+            <article class="match" data-status="upcoming">
+              <div class="flex justify-between items-center mb-4">
+                <span class="text-[10px] muted font-bold">ФРАНЦІЯ · ЛІГА 1</span>
+                <span class="status upcoming">22:00</span>
+              </div>
+              <div class="flex items-center justify-between gap-2">
+                <div class="team"><span class="team-icon">🔵</span>PSG</div>
+                <span class="text-sm muted">VS</span>
+                <div class="team"><span class="team-icon">🟢</span>Marseille</div>
+              </div>
+              <p class="muted text-[10px] mt-4">Час наведено для демонстрації</p>
+            </article>
+          </div>
+          <p id="noMatches" class="hidden muted text-sm py-5 text-center">Матчів у цій категорії немає.</p>
+        </section>
+
+        <!-- Додаткова секція головної -->
+        <section class="panel p-5 mt-6">
+          <div class="flex justify-between items-center gap-3">
+            <div>
+              <p class="text-xs accent font-extrabold tracking-widest mb-1">ТВОЯ ГРА</p>
+              <h2 class="text-lg font-black">Стеж за улюбленими турнірами</h2>
+              <p class="muted text-sm mt-2 leading-6">Обери країну або змагання в лівому меню, щоб переглянути розділи турніру.</p>
+            </div>
+            <span class="text-3xl hidden sm:block">⚽</span>
+          </div>
+        </section>
+      </div>
+
+      <!-- Контент, який відкривається з лівого меню -->
+      <section id="sectionContent" class="hidden panel p-5 sm:p-6">
+        <button onclick="goHome()" class="text-xs muted hover:text-white mb-5">← На головну</button>
+        <p id="sectionEyebrow" class="text-xs accent font-extrabold tracking-widest mb-2">ТУРНІР</p>
+        <h2 id="sectionTitle" class="text-2xl font-black mb-4">Новини</h2>
+        <div id="sectionBody" class="text-sm leading-6"></div>
+      </section>
+    </section>
+
+    <!-- ПРАВА КОЛОНКА: новини та календар -->
+    <aside class="md:col-span-6 lg:col-span-3 order-3 right-column min-w-0">
+      <section class="panel p-4">
+        <div class="flex justify-between items-center mb-1">
+          <h2 class="text-lg font-black">Останні новини</h2>
+          <span class="text-[10px] accent font-extrabold tracking-widest">FOOTY</span>
+        </div>
+        <p class="muted text-xs mb-2">Головне зі світу футболу</p>
+
+        <div id="newsList">
+          <article class="news-item">
+            <p class="text-[10px] muted mb-2">АПЛ · ОГЛЯД</p>
+            <a href="#" data-title="АПЛ: боротьба за перше місце загострюється">АПЛ: боротьба за перше місце загострюється</a>
+            <p class="muted text-xs mt-2 leading-5">Ключові команди продовжують боротьбу за лідерство в чемпіонаті.</p>
+          </article>
+          <article class="news-item">
+            <p class="text-[10px] muted mb-2">ІСПАНІЯ · ЛА ЛІГА</p>
+            <a href="#" data-title="Іспанські гранди готуються до важливих матчів">Іспанські гранди готуються до важливих матчів</a>
+            <p class="muted text-xs mt-2 leading-5">Попереду важливий відрізок сезону для претендентів на титул.</p>
+          </article>
+          <article class="news-item">
+            <p class="text-[10px] muted mb-2">ЄВРОПА · ОГЛЯД</p>
+            <a href="#" data-title="Молоді гравці привертають увагу в Європі">Молоді гравці привертають увагу в Європі</a>
+            <p class="muted text-xs mt-2 leading-5">Нові імена поступово стають важливою частиною своїх команд.</p>
+          </article>
+          <article class="news-item">
+            <p class="text-[10px] muted mb-2">ТРАНСФЕРИ · ОГЛЯД</p>
+            <a href="#" data-title="На що звертати увагу перед зимовим трансферним вікном">На що звертати увагу перед зимовим трансферним вікном</a>
+            <p class="muted text-xs mt-2 leading-5">Потреби клубів можуть визначити головні трансферні історії.</p>
+          </article>
+        </div>
+
+        <button class="all-news mt-3" onclick="showDialog('Усі новини','У цій демонстраційній версії повний архів новин ще не підключено.')">
+          Дивитись усі новини →
+        </button>
+      </section>
+
+      <!-- Інтерактивний календар — під стрічкою новин -->
+      <section class="calendar mt-4" aria-label="Матч-календар">
+        <div class="flex justify-between items-center mb-3">
+          <div>
+            <p class="text-[10px] accent font-extrabold tracking-[.16em] mb-1">МАТЧ-КАЛЕНДАР</p>
+            <h2 id="calendarMonth" class="text-base font-black">Жовтень 2026</h2>
+          </div>
+          <div class="flex gap-1">
+            <button id="prevMonth" class="calendar-nav" aria-label="Попередній місяць">‹</button>
+            <button id="nextMonth" class="calendar-nav" aria-label="Наступний місяць">›</button>
+          </div>
+        </div>
+
+        <div class="calendar-grid" id="calendarWeekdays">
+          <div class="weekday">ПН</div>
+          <div class="weekday">ВТ</div>
+          <div class="weekday">СР</div>
+          <div class="weekday">ЧТ</div>
+          <div class="weekday">ПТ</div>
+          <div class="weekday">СБ</div>
+          <div class="weekday">НД</div>
+        </div>
+        <div class="calendar-grid" id="calendarDays"></div>
+
+        <div class="flex flex-wrap items-center gap-3 mt-3 text-[10px] muted">
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full" style="background:var(--accent)"></span>Є матчі</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full border" style="border-color:var(--accent)"></span>Сьогодні</span>
+        </div>
+
+        <div id="calendarSelected" class="calendar-selected">
+          Вибери дату, щоб переглянути інформацію про матчі.
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <footer class="border-t border-gray-800 mt-8 py-5 flex flex-wrap justify-between gap-3 text-xs muted">
+    <span>© 2026 FOOTY. Футбол без зайвого.</span>
+    <span>Демонстраційна версія · Результати та розклад не є актуальними даними</span>
+  </footer>
+</main>
+
+<script>
+/* Діалогове вікно */
+function showDialog(title, text) {
+  document.getElementById("dialogTitle").textContent = title;
+  document.getElementById("dialogText").textContent = text;
+  document.getElementById("dialogOverlay").classList.remove("hidden");
+}
+function closeDialog() {
+  document.getElementById("dialogOverlay").classList.add("hidden");
+}
+document.getElementById("dialogOverlay").addEventListener("click", e => {
+  if (e.target.id === "dialogOverlay") closeDialog();
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeDialog();
+});
+
+/* Акордеон країн: одночасно розгорнутий лише один пункт */
+document.querySelectorAll(".country-btn").forEach(button => {
+  button.addEventListener("click", () => {
+    const group = button.closest(".country-group");
+    const submenu = group.querySelector(".country-submenu");
+    const shouldOpen = !submenu.classList.contains("open");
+
+    document.querySelectorAll(".country-submenu").forEach(menu => menu.classList.remove("open"));
+    document.querySelectorAll(".country-btn").forEach(btn => {
+      btn.classList.remove("open");
+      btn.setAttribute("aria-expanded", "false");
+    });
+
+    if (shouldOpen) {
+      submenu.classList.add("open");
+      button.classList.add("open");
+      button.setAttribute("aria-expanded", "true");
+    }
+  });
+});
+
+/* Перехід між головною та розділами турнірів */
+function goHome() {
+  document.getElementById("homeContent").classList.remove("hidden");
+  document.getElementById("sectionContent").classList.add("hidden");
+  document.getElementById("pageHeading").textContent = "Усе про футбол. В одному місці.";
+  document.querySelectorAll(".sub-link").forEach(link => link.classList.remove("active"));
+}
+
+document.querySelectorAll(".sub-link").forEach(link => {
+  link.addEventListener("click", () => {
+    const league = link.dataset.league;
+    const section = link.dataset.section;
+
+    document.querySelectorAll(".sub-link").forEach(item => item.classList.toggle("active", item === link));
+
+    document.getElementById("homeContent").classList.add("hidden");
+    document.getElementById("sectionContent").classList.remove("hidden");
+    document.getElementById("pageHeading").textContent = league + " · " + section;
+    document.getElementById("sectionEyebrow").textContent = league.toUpperCase();
+    document.getElementById("sectionTitle").textContent = section;
+
+    const body = document.getElementById("sectionBody");
+    if (section === "Новини") {
+      body.innerHTML = `
+        <p class="muted mb-4">Останні події турніру — демонстраційний вміст.</p>
+        <div class="border-b border-gray-700 py-4">
+          <p class="accent text-xs mb-2">ОГЛЯД ТУРУ</p>
+          <h3 class="font-bold text-base">Головні події футбольного тижня</h3>
+          <p class="muted mt-2">Огляд результатів, виступів команд і ключових моментів.</p>
+        </div>
+        <div class="border-b border-gray-700 py-4">
+          <p class="accent text-xs mb-2">АНАЛІТИКА</p>
+          <h3 class="font-bold text-base">На що звернути увагу в наступному турі</h3>
+          <p class="muted mt-2">Важливі протистояння та історії, за якими варто стежити.</p>
+        </div>`;
+    } else if (section.includes("Розклад")) {
+      body.innerHTML = `
+        <p class="muted mb-4">Демонстраційний розклад. Реальні матчі та час початку не підключені.</p>
+        ${[
+          ["18:30", "Команда A", "Команда B"],
+          ["20:00", "Команда C", "Команда D"],
+          ["21:45", "Команда E", "Команда F"]
+        ].map(m => `
+          <div class="match mb-3">
+            <div class="flex justify-between muted text-xs mb-3"><span>${league}</span><span>${m[0]}</span></div>
+            <div class="flex justify-between gap-3 font-bold"><span>${m[1]}</span><span class="muted">VS</span><span>${m[2]}</span></div>
+          </div>`).join("")}`;
+    } else if (section === "Таблиця") {
+      body.innerHTML = `
+        <p class="muted mb-4">Приклад структури турнірної таблиці. Це не актуальні турнірні дані.</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm min-w-[340px]">
+            <thead class="muted"><tr><th class="py-3">#</th><th>Команда</th><th>І</th><th>О</th></tr></thead>
+            <tbody>
+              ${["Команда A","Команда B","Команда C","Команда D","Команда E"].map((name,i)=>`
+                <tr class="border-t border-gray-800">
+                  <td class="py-3 muted">${i+1}</td>
+                  <td class="py-3 font-bold">${name}</td>
+                  <td class="py-3">9</td>
+                  <td class="py-3 font-black accent">${22-i*3}</td>
+                </tr>`).join("")}
+            </tbody>
+          </table>
+        </div>`;
+    } else if (section === "Статистика") {
+      body.innerHTML = `
+        <p class="muted mb-4">Приклад розділу індивідуальної статистики.</p>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div class="match"><p class="muted text-xs">Найкращий бомбардир</p><h3 class="text-lg font-black mt-2">Гравець A</h3><p class="accent mt-1">8 голів · демо</p></div>
+          <div class="match"><p class="muted text-xs">Найбільше асистів</p><h3 class="text-lg font-black mt-2">Гравець B</h3><p class="accent mt-1">6 асистів · демо</p></div>
+        </div>`;
+    } else {
+      body.innerHTML = `
+        <p class="muted mb-4">Розділ «${section}» для турніру «${league}».</p>
+        <div class="match">
+          <p class="font-bold">Інформація про змагання</p>
+          <p class="muted mt-2">Тут можна буде додати календар, результати, жеребкування та новини кубкового турніру.</p>
+        </div>`;
+    }
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+});
+
+/* Фільтри матчів */
+document.querySelectorAll(".match-filter").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".match-filter").forEach(b => {
+      b.classList.remove("bg-[#293126]", "accent", "font-bold");
+      b.classList.add("muted");
+    });
+    button.classList.add("bg-[#293126]", "accent", "font-bold");
+    button.classList.remove("muted");
+
+    let visible = 0;
+    document.querySelectorAll("#matchList .match").forEach(match => {
+      const show = button.dataset.filter === "all" || match.dataset.status === button.dataset.filter;
+      match.classList.toggle("hidden", !show);
+      if (show) visible++;
+    });
+    document.getElementById("noMatches").classList.toggle("hidden", visible > 0);
+  });
+});
+
+/* Новини відкривають демонстраційне повідомлення */
+document.querySelectorAll(".news-item a").forEach(link => {
+  link.addEventListener("click", event => {
+    event.preventDefault();
+    showDialog(link.dataset.title, "Це демонстраційна новина. Для повної версії потрібно підключити тексти публікацій.");
+  });
+});
+
+/* Пошук по вмісту сторінки */
+const searchInput = document.getElementById("searchInput");
+const searchResults = document.getElementById("searchResults");
+
+searchInput.addEventListener("input", () => {
+  const query = searchInput.value.trim().toLowerCase();
+  if (!query) {
+    searchResults.classList.add("hidden");
+    searchResults.innerHTML = "";
+    return;
+  }
+
+  const searchable = [
+    ...document.querySelectorAll(".country-btn, .sub-link, .match, .news-item a")
+  ];
+  const results = searchable
+    .filter(item => item.textContent.toLowerCase().includes(query))
+    .slice(0, 6);
+
+  searchResults.innerHTML = "";
+  if (results.length) {
+    results.forEach(item => {
+      const row = document.createElement("button");
+      row.className = "block w-full text-left p-2 rounded-lg hover:bg-[#293126]";
+      row.textContent = item.textContent.trim().replace(/\s+/g, " ");
+      row.addEventListener("click", () => {
+        if (item.classList.contains("sub-link")) item.click();
+        else if (item.classList.contains("country-btn")) item.click();
+        else if (item.matches(".news-item a")) item.click();
+        else {
+          document.getElementById("homeContent").classList.remove("hidden");
+          document.getElementById("sectionContent").classList.add("hidden");
+          item.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        searchResults.classList.add("hidden");
+      });
+      searchResults.appendChild(row);
+    });
+  } else {
+    const message = document.createElement("p");
+    message.className = "muted p-2";
+    message.textContent = "Нічого не знайдено.";
+    searchResults.appendChild(message);
+  }
+  searchResults.classList.remove("hidden");
+});
+
+document.addEventListener("click", event => {
+  if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
+    searchResults.classList.add("hidden");
+  }
+});
+
+/* Інші спортивні розділи */
+document.querySelectorAll(".sport").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".sport").forEach(b => b.classList.toggle("active", b === button));
+    if (button.dataset.sport !== "Футбол") {
+      showDialog(button.dataset.sport, "Зараз FOOTY працює як футбольний демо-портал. Інші спортивні розділи можна додати окремо.");
+      document.querySelectorAll(".sport").forEach(b => b.classList.toggle("active", b.dataset.sport === "Футбол"));
+    }
+  });
+});
+
+/* ІНТЕРАКТИВНИЙ КАЛЕНДАР */
+const monthNames = [
+  "Січень", "Лютий", "Березень", "Квітень",
+  "Травень", "Червень", "Липень", "Серпень",
+  "Вересень", "Жовтень", "Листопад", "Грудень"
+];
+
+const weekdaysLong = [
+  "неділя", "понеділок", "вівторок", "середа",
+  "четвер", "п’ятниця", "субота"
+];
+
+/* Календар відкривається на жовтні 2026 року */
+let calendarYear = 2026;
+let calendarMonth = 9; // 0 = січень, 9 = жовтень
+let selectedDate = "2026-10-25";
+
+/* Демо-дати, в які відбуваються матчі */
+const matchDates = {
+  "2026-10-03": ["Матчі чемпіонатів Європи"],
+  "2026-10-04": ["Матчі чемпіонатів Європи"],
+  "2026-10-17": ["Матчі чемпіонатів Європи"],
+  "2026-10-18": ["Матчі чемпіонатів Європи"],
+  "2026-10-24": ["Матчі чемпіонатів Європи"],
+  "2026-10-25": ["Футбольні матчі вихідного дня"],
+  "2026-10-28": ["Кубкові матчі"],
+  "2026-11-01": ["Матчі чемпіонатів Європи"],
+  "2026-11-07": ["Матчі чемпіонатів Європи"],
+  "2026-11-08": ["Матчі чемпіонатів Європи"]
+};
+
+function dateKey(year, month, day) {
+  return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+function renderCalendar() {
+  document.getElementById("calendarMonth").textContent =
+    `${monthNames[calendarMonth]} ${calendarYear}`;
+
+  const grid = document.getElementById("calendarDays");
+  grid.innerHTML = "";
+
+  const firstDay = new Date(calendarYear, calendarMonth, 1);
+  const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+  const previousDays = new Date(calendarYear, calendarMonth, 0).getDate();
+
+  // Перетворення неділі (0) на 6, щоб тиждень починався з понеділка
+  const offset = (firstDay.getDay() + 6) % 7;
+
+  for (let i = 0; i < 42; i++) {
+    let day, dateYear = calendarYear, dateMonth = calendarMonth;
+    let otherMonth = false;
+
+    if (i < offset) {
+      day = previousDays - offset + i + 1;
+      dateMonth--;
+      otherMonth = true;
+      if (dateMonth < 0) { dateMonth = 11; dateYear--; }
+    } else if (i >= offset + daysInMonth) {
+      day = i - offset - daysInMonth + 1;
+      dateMonth++;
+      otherMonth = true;
+      if (dateMonth > 11) { dateMonth = 0; dateYear++; }
+    } else {
+      day = i - offset + 1;
+    }
+
+    const key = dateKey(dateYear, dateMonth, day);
+    const today = dateKey(2026, 9, 25) === key;
+    const selected = selectedDate === key;
+    const hasMatch = Boolean(matchDates[key]);
+
+    const button = document.createElement("button");
+    button.className = "calendar-day";
+    if (otherMonth) button.classList.add("other-month");
+    if (today) button.classList.add("today");
+    if (selected) button.classList.add("selected");
+    button.setAttribute("aria-label", `${day} ${monthNames[dateMonth]} ${dateYear}`);
+    button.setAttribute("aria-pressed", String(selected));
+
+    const number = document.createElement("span");
+    number.textContent = day;
+    button.appendChild(number);
+
+    if (hasMatch) {
+      const dot = document.createElement("span");
+      dot.className = "match-dot";
+      button.appendChild(dot);
+      button.title = matchDates[key].join(", ");
+    } else {
+      const spacer = document.createElement("span");
+      spacer.style.height = "4px";
+      button.appendChild(spacer);
+    }
+
+    button.addEventListener("click", () => {
+      selectedDate = key;
+      renderCalendar();
+      renderSelectedDate();
+    });
+
+    grid.appendChild(button);
+  }
+
+  renderSelectedDate();
+}
+
+function renderSelectedDate() {
+  const box = document.getElementById("calendarSelected");
+  const [year, month, day] = selectedDate.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  const dateLabel = `${day} ${monthNames[month - 1].toLowerCase()} ${year}`;
+  const weekday = weekdaysLong[date.getDay()];
+  const events = matchDates[selectedDate];
+
+  box.innerHTML = "";
+  const heading = document.createElement("p");
+  heading.className = "font-extrabold text-white capitalize mb-1";
+  heading.textContent = `${weekday}, ${dateLabel}`;
+  box.appendChild(heading);
+
+  const description = document.createElement("p");
+  description.textContent = events
+    ? events.join(" · ") + " (демо)"
+    : "Позначених матчів немає. Це не повний реальний розклад.";
+  box.appendChild(description);
+}
+
+document.getElementById("prevMonth").addEventListener("click", () => {
+  calendarMonth--;
+  if (calendarMonth < 0) { calendarMonth = 11; calendarYear--; }
+  renderCalendar();
+});
+
+document.getElementById("nextMonth").addEventListener("click", () => {
+  calendarMonth++;
+  if (calendarMonth > 11) { calendarMonth = 0; calendarYear++; }
+  renderCalendar();
+});
+
+renderCalendar();
+</script>
+</body>
+</html>
