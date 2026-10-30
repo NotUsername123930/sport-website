@@ -1,16 +1,26 @@
 import os
 import requests
 from dotenv import load_dotenv
+from datetime import date
 
-# Завантажуємо ключ з твого безпечного файлу .env
+# Django setup
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "football_hub.settings")
+
+import django
+django.setup()
+
+from core.models import Fixture
+
+# Завантажуємо ключ з .env
 load_dotenv()
+
 API_KEY = os.getenv("SPORT_API_KEY")
-URL = "https://v3.football.api-sports.io/fixtures"
 
 if not API_KEY:
     raise ValueError("Помилка: SPORT_API_KEY не знайдено у файлі .env!")
 
-# Словник елітних турнірів FOOTY та їхні залізні ID з бази даних API-Football
+URL = "https://v3.football.api-sports.io/fixtures"
+
 TARGET_LEAGUES = {
     39: "Англійська Прем'єр-ліга",
     140: "Іспанська Ла Ліга",
@@ -19,56 +29,73 @@ TARGET_LEAGUES = {
     61: "Французька Ліга 1",
     2: "Ліга чемпіонів УЄФА",
     3: "Ліга Європи УЄФА",
-    847: "Ліга конференцій УЄФА"
+    847: "Ліга конференцій УЄФА",
 }
 
-# Параметри запиту на сьогоднішню дату
-querystring = {"date": "2026-10-28"}
-headers = {"x-apisports-key": API_KEY}
+querystring = {
+    "date": date.today().strftime("%Y-%m-%d")
+}
+
+headers = {
+    "x-apisports-key": API_KEY
+}
 
 try:
-    print("З'єднуємось із сервером та фільтруємо 484 матчі...")
-    response = requests.get(URL, headers=headers, params=querystring)
+    print("Отримання матчів...")
+
+    response = requests.get(
+        URL,
+        headers=headers,
+        params=querystring
+    )
+
     response.raise_for_status()
 
     data = response.json()
-    all_fixtures = data.get("response", [])
 
-    print("\n=== АКТУАЛЬНІ МАТЧІ ТОП-ЛІГ ТА ЄВРОКУБКІВ ДЛЯ FOOTY ===")
+    fixtures = data.get("response", [])
 
-    found_target_matches = 0
+    saved_matches = 0
 
-    for item in all_fixtures:
+    for item in fixtures:
+
         league_id = item.get("league", {}).get("id")
 
-        # Перевіряємо, чи входить ID турніру в наш список обраних
-        if league_id in TARGET_LEAGUES:
-            found_target_matches += 1
+        if league_id not in TARGET_LEAGUES:
+            continue
 
-            league_name = TARGET_LEAGUES[league_id]
-            home_team = item.get("teams", {}).get("home", {}).get("name")
-            away_team = item.get("teams", {}).get("away", {}).get("name")
+        fixture_id = item.get("fixture", {}).get("id")
 
-            # Статус матчу (NS - не розпочався, FT - завершено, 1H/2H - йде прямо зараз)
-            status = item.get("fixture", {}).get("status", {}).get("short")
+        league_name = TARGET_LEAGUES[league_id]
 
-            # Рахунок
-            home_goals = item.get("goals", {}).get("home")
-            away_goals = item.get("goals", {}).get("away")
+        home_team = item.get("teams", {}).get("home", {}).get("name")
+        away_team = item.get("teams", {}).get("away", {}).get("name")
 
-            # Якщо матч ще не розпочався, красиво пишемо "vs" замість порожнього рахунку
-            if status == "NS":
-                score = "vs"
-            else:
-                score = f"{home_goals}:{away_goals}"
+        status = item.get("fixture", {}).get("status", {}).get("short")
 
-            print(f"[{league_name}] {home_team} {score} {away_team} (Статус: {status})")
+        home_goals = item.get("goals", {}).get("home")
+        away_goals = item.get("goals", {}).get("away")
 
-    if found_target_matches == 0:
-        print("\nСьогодні матчів у наших 5 топ-лігах та єврокубках немає.")
-        print("Це нормальна ситуація для середини тижня, якщо немає туру Ліги Чемпіонів. Чекаємо вихідних!")
-    else:
-        print(f"\nФільтрація завершена! Знайдено {found_target_matches} важливих поєдинків для головної сторінки.")
+        Fixture.objects.update_or_create(
+            api_id=fixture_id,
+            defaults={
+                "league_name": league_name,
+                "home_team": home_team,
+                "away_team": away_team,
+                "status": status,
+                "home_score": home_goals,
+                "away_score": away_goals,
+            }
+        )
+
+        saved_matches += 1
+
+        print(
+            f"Збережено: "
+            f"{home_team} - {away_team}"
+        )
+
+    print(f"\nУспішно оброблено {saved_matches} матчів.")
 
 except requests.exceptions.RequestException as e:
-    print(f"Помилка підключення до API: {e}")
+    print(f"Помилка API: {e}")
