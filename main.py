@@ -3,7 +3,6 @@ import requests
 from dotenv import load_dotenv
 from datetime import date
 
-# Django setup
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "football_hub.settings")
 
 import django
@@ -11,7 +10,6 @@ django.setup()
 
 from core.models import Fixture
 
-# Завантажуємо ключ з .env
 load_dotenv()
 
 API_KEY = os.getenv("SPORT_API_KEY")
@@ -73,6 +71,8 @@ try:
 
         status = item.get("fixture", {}).get("status", {}).get("short")
 
+        fixture_date = item.get("fixture", {}).get("date")
+
         home_goals = item.get("goals", {}).get("home")
         away_goals = item.get("goals", {}).get("away")
 
@@ -82,6 +82,7 @@ try:
                 "league_name": league_name,
                 "home_team": home_team,
                 "away_team": away_team,
+                "fixture_date": fixture_date,
                 "status": status,
                 "home_score": home_goals,
                 "away_score": away_goals,

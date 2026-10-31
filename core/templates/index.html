@@ -11,6 +11,9 @@
 <div>
     <strong>{{ match.league_name }}</strong><br>
 
+    Дата: {{ match.fixture_date|date:"d.m.Y H:i" }}
+    <br><br>
+
     {{ match.home_team }}
 
     {% if match.status == 'NS' %}

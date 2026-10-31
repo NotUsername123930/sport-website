@@ -1,6 +1,7 @@
 from django.db import models
 
 
+
 class Fixture(models.Model):
     api_id = models.IntegerField(unique=True)
 
@@ -8,6 +9,8 @@ class Fixture(models.Model):
 
     home_team = models.CharField(max_length=100)
     away_team = models.CharField(max_length=100)
+
+    fixture_date = models.DateTimeField()
 
     status = models.CharField(max_length=10)
 
@@ -19,8 +22,6 @@ class Fixture(models.Model):
     def __str__(self):
         return (
             f"[{self.league_name}] "
-            f"{self.home_team} "
-            f"{self.home_score}:{self.away_score} "
-            f"{self.away_team} "
-            f"({self.status})"
+            f"{self.home_team} {self.home_score}:{self.away_score} "
+            f"{self.away_team} ({self.status})"
         )
