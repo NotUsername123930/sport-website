@@ -1,0 +1,25 @@
+<h1>{{ league_name }}</h1>
+
+{% for match in matches %}
+
+<div>
+
+    {{ match.fixture_date|date:"d.m.Y H:i" }}
+
+    <br>
+
+    {{ match.home_team }}
+
+    {% if match.status == 'NS' %}
+        vs
+    {% else %}
+        {{ match.home_score }} : {{ match.away_score }}
+    {% endif %}
+
+    {{ match.away_team }}
+
+</div>
+
+<hr>
+
+{% endfor %}

@@ -25,3 +25,21 @@ class Fixture(models.Model):
             f"{self.home_team} {self.home_score}:{self.away_score} "
             f"{self.away_team} ({self.status})"
         )
+
+class News(models.Model):
+    title = models.CharField(max_length=300)
+
+    description = models.TextField(blank=True)
+
+    source = models.CharField(max_length=100)
+
+    article_url = models.URLField()
+
+    image_url = models.URLField(blank=True)
+
+    published_at = models.DateTimeField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title

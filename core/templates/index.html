@@ -1,37 +1,126 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Footy</title>
+    <title>JustSport</title>
 </head>
 <body>
 
+
+<h3>Ліги</h3>
+
+<a href="/">Усі ліги</a>
+
+<br><br>
+
+{% for league in leagues %}
+    <a href="?league={{ league }}">
+        {{ league }}
+    </a>
+    <br>
+{% endfor %}
+
+<hr>
+
 <h1>Матчі</h1>
 
-{% for match in matches %}
+
+
+<p>LIVE: {{ live_count }}</p>
+<p>Найближчі: {{ upcoming_count }}</p>
+<p>Завершені: {{ finished_count }}</p>
+
+<hr>
+
+<h1>Новини</h1>
+
+{% for news in latest_news %}
+
 <div>
-    <strong>{{ match.league_name }}</strong><br>
 
-    Дата: {{ match.fixture_date|date:"d.m.Y H:i" }}
-    <br><br>
-
-    {{ match.home_team }}
-
-    {% if match.status == 'NS' %}
-        vs
-    {% else %}
-        {{ match.home_score }} : {{ match.away_score }}
-    {% endif %}
-
-    {{ match.away_team }}
+    <strong>{{ news.title }}</strong>
 
     <br>
-    Статус: {{ match.status }}
+
+    {{ news.published_at|date:"d.m.Y H:i" }}
+
+    <br>
+
+    {{ news.description }}
+
 </div>
 
 <hr>
 
 {% empty %}
-<p>Матчів не знайдено.</p>
+
+<p>Новин поки немає.</p>
+
+{% endfor %}
+
+
+<h2>LIVE</h2>
+
+{% for match in live_matches %}
+<div>
+    <strong>{{ match.league_name }}</strong><br>
+
+    {{ match.fixture_date|date:"d.m.Y H:i" }}
+    <br>
+
+    {{ match.home_team }}
+    {{ match.home_score }} : {{ match.away_score }}
+    {{ match.away_team }}
+
+    <br>
+    Статус: {{ match.status }}
+</div>
+<hr>
+{% empty %}
+<p>Матчів у прямому ефірі немає.</p>
+{% endfor %}
+
+
+
+<h1>Найближчі матчі</h1>
+
+{% for match in upcoming_matches %}
+<div>
+    <strong>{{ match.league_name }}</strong><br>
+
+    {{ match.fixture_date|date:"d.m.Y H:i" }}
+    <br>
+
+    {{ match.home_team }} vs {{ match.away_team }}
+
+    <br>
+    Статус: {{ match.status }}
+</div>
+<hr>
+{% empty %}
+<p>Найближчих матчів немає.</p>
+{% endfor %}
+
+
+
+<h1>Завершені матчі</h1>
+
+{% for match in finished_matches %}
+<div>
+    <strong>{{ match.league_name }}</strong><br>
+
+    {{ match.fixture_date|date:"d.m.Y H:i" }}
+    <br>
+
+    {{ match.home_team }}
+    {{ match.home_score }} : {{ match.away_score }}
+    {{ match.away_team }}
+
+    <br>
+    Статус: {{ match.status }}
+</div>
+<hr>
+{% empty %}
+<p>Завершених матчів немає.</p>
 {% endfor %}
 
 </body>
