@@ -27,15 +27,20 @@ class Fixture(models.Model):
         )
 
 class News(models.Model):
+    news_id = models.CharField(
+        max_length=100,
+        unique=True
+    )
+
     title = models.CharField(max_length=300)
-
     description = models.TextField(blank=True)
-
     source = models.CharField(max_length=100)
-
     article_url = models.URLField()
-
     image_url = models.URLField(blank=True)
+    sport = models.CharField(
+        max_length=50,
+        default="Football"
+    )
 
     published_at = models.DateTimeField()
 
