@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import Fixture, News
+from django.shortcuts import render, get_object_or_404
 
 
 def home_page(request):
@@ -20,7 +21,7 @@ def home_page(request):
 
     latest_news = News.objects.order_by(
         "-published_at"
-    )[:10]
+    )
 
     if selected_league:
         upcoming_matches = upcoming_matches.filter(
@@ -40,6 +41,8 @@ def home_page(request):
         .values_list("league_name", flat=True)
         .distinct()
     )
+
+    latest_news = News.objects.order_by("-published_at")[:10]
 
     context = {
         "live_matches": live_matches,
@@ -68,3 +71,6 @@ def league_page(request, league_name):
 
     return render(request,"league.html",context)
 
+def news_page(request, news_id):
+    news = get_object_or_404(News,id=news_id)
+    return render(request,"news.html",{"news": news})

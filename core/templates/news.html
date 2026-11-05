@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ news.title }}</title>
+</head>
+<body>
+
+<h1>{{ news.title }}</h1>
+
+<p>
+    Дата:
+    {{ news.published_at|date:"d.m.Y H:i" }}
+</p>
+
+<p>
+    Джерело:
+    {{ news.source }}
+</p>
+
+{% if news.image_url %}
+<img
+    src="{{ news.image_url }}"
+    alt="{{ news.title }}"
+    width="600"
+>
+{% endif %}
+
+<p>
+    {{ news.description }}
+</p>
+
+<p>
+    <a href="/">← Назад на головну</a>
+</p>
+
+</body>
+</html>
