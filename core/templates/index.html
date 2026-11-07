@@ -1,29 +1,283 @@
-<h2>Останні новини</h2>
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JustSport</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" href="/?date={{ selected_date }}">JustSport<span>.</span></a>
+    <p>Футбол сьогодні</p>
+</header>
 
-{% for news in latest_news %}
+<div class="container">
+    <aside class="sidebar">
+        <h2>Ліги</h2>
+        <a class="sidebar-link {% if not selected_league %}is-active{% endif %}"
+           href="/?date={{ selected_date }}">Усі ліги</a>
 
-<div>
-    <strong>{{ news.title }}</strong>
+        {% for league in leagues %}
+            <a class="sidebar-link {% if selected_league == league %}is-active{% endif %}"
+               href="?league={{ league|urlencode }}&date={{ selected_date }}">
+                {{ league }}
+            </a>
+        {% endfor %}
+    </aside>
 
-    <br>
+    <main class="content">
+        {% if latest_news %}
+            <article class="hero">
+                {% if latest_news.0.image_url %}
+                    <img class="hero-image"
+                         src="{{ latest_news.0.image_url }}"
+                         alt=""
+                         onerror="this.hidden=true">
+                {% endif %}
 
-    {{ news.source }}
+                <div class="hero-shade"></div>
 
-    <br>
+                <div class="hero-content">
+                    <span class="eyebrow">Головна новина</span>
+                    <h1>{{ latest_news.0.title }}</h1>
+                    <p>{{ latest_news.0.source }}</p>
 
-    {{ news.published_at|date:"d.m.Y H:i" }}
+                    <a class="hero-link"
+                       href="{{ latest_news.0.article_url }}"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        Читати новину <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+            </article>
+        {% endif %}
 
-    <br>
+        <section class="section fixtures-section">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">Розклад</span>
+                    <h2>Матчі</h2>
+                </div>
 
-    <a href="{{ news.article_url }}" target="_blank">
-        Читати далі →
-    </a>
+                <form class="date-picker" method="get">
+                    {% if selected_league %}
+                        <input type="hidden" name="league" value="{{ selected_league }}">
+                    {% endif %}
+
+                    <a class="date-arrow"
+                       href="?date={{ previous_day|date:'Y-m-d' }}{% if selected_league %}&amp;league={{ selected_league|urlencode }}{% endif %}"
+                       aria-label="Попередній день">‹</a>
+
+                    <label class="visually-hidden" for="match-date">
+                        Дата матчів
+                    </label>
+
+                    <input id="match-date"
+                           type="date"
+                           name="date"
+                           value="{{ selected_date }}">
+
+                    <button class="date-submit" type="submit">Показати</button>
+
+                    <a class="date-arrow"
+                       href="?date={{ next_day|date:'Y-m-d' }}{% if selected_league %}&amp;league={{ selected_league|urlencode }}{% endif %}"
+                       aria-label="Наступний день">›</a>
+                </form>
+            </div>
+
+            <div class="status-tabs" role="tablist" aria-label="Фільтр матчів">
+                <button class="status-tab is-active"
+                        type="button"
+                        data-filter="all"
+                        aria-pressed="true">
+                    Усі <span>{{ daily_matches|length }}</span>
+                </button>
+
+                <button class="status-tab"
+                        type="button"
+                        data-filter="live"
+                        aria-pressed="false">
+                    LIVE <span data-count="live">0</span>
+                </button>
+
+                <button class="status-tab"
+                        type="button"
+                        data-filter="upcoming"
+                        aria-pressed="false">
+                    Заплановані <span data-count="upcoming">0</span>
+                </button>
+
+                <button class="status-tab"
+                        type="button"
+                        data-filter="finished"
+                        aria-pressed="false">
+                    Завершені <span data-count="finished">0</span>
+                </button>
+            </div>
+
+            {% regroup daily_matches|dictsort:'league_name' by league_name as league_groups %}
+
+            <div id="league-list">
+                {% for group in league_groups %}
+                    <section class="league-group" data-league-group>
+                        <h3 class="league-title">
+                            <span class="league-mark">⚽</span>
+                            {{ group.grouper }}
+                        </h3>
+
+                        <div class="match-list">
+                            {% for match in group.list %}
+                                <article class="match"
+                                         data-status="{% if match.status == 'FT' %}finished{% elif match.status == 'NS' %}upcoming{% else %}live{% endif %}">
+                                    <div class="match-time">
+                                        {% if match.status == 'FT' %}
+                                            <span class="match-state">Завершено</span>
+                                        {% elif match.status == 'NS' %}
+                                            <time datetime="{{ match.fixture_date|date:'c' }}">
+                                                {{ match.fixture_date|date:'H:i' }}
+                                            </time>
+                                        {% else %}
+                                            <span class="live-indicator">
+                                                <i></i>LIVE
+                                            </span>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="teams">
+                                        <div class="team">
+                                            <span class="team-badge">
+                                                {{ match.home_team|slice:':1'|upper }}
+                                            </span>
+                                            <span class="team-name">
+                                                {{ match.home_team }}
+                                            </span>
+                                        </div>
+
+                                        <strong class="score">
+                                            {% if match.home_score != None %}
+                                                {{ match.home_score }}
+                                            {% else %}
+                                                –
+                                            {% endif %}
+                                            <span>:</span>
+                                            {% if match.away_score != None %}
+                                                {{ match.away_score }}
+                                            {% else %}
+                                                –
+                                            {% endif %}
+                                        </strong>
+
+                                        <div class="team team-away">
+                                            <span class="team-badge">
+                                                {{ match.away_team|slice:':1'|upper }}
+                                            </span>
+                                            <span class="team-name">
+                                                {{ match.away_team }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    </section>
+                {% empty %}
+                    <div class="empty-state">
+                        <span>📅</span>
+                        <p>На цю дату матчів не заплановано.</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <p id="filtered-empty" class="empty-filter" hidden>
+                Матчів із таким статусом на цю дату немає.
+            </p>
+        </section>
+    </main>
+
+    <aside class="rightbar">
+        <section class="side-section whats-new">
+            <span class="eyebrow">JustSport</span>
+            <h2>Оновлення сайту</h2>
+
+            {% if latest_post %}
+                <h3>{{ latest_post.title }}</h3>
+                <p class="muted">{{ latest_post.description }}</p>
+            {% else %}
+                <p class="muted">Оновлень поки немає.</p>
+            {% endif %}
+        </section>
+
+        <section class="side-section">
+            <h2>Новини</h2>
+
+            {% for news in latest_news %}
+                <article class="news">
+                    <a href="{{ news.article_url }}"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        {{ news.title }}
+                    </a>
+
+                    <p>
+                        {{ news.source }}
+                        {% if news.published_at %}
+                            <span> · {{ news.published_at|date:'d.m H:i' }}</span>
+                        {% endif %}
+                    </p>
+                </article>
+            {% empty %}
+                <p class="muted">Новин поки немає.</p>
+            {% endfor %}
+        </section>
+    </aside>
 </div>
 
-<hr>
+<script>
+(() => {
+    const tabs = document.querySelectorAll('.status-tab');
+    const matches = document.querySelectorAll('.match');
+    const groups = document.querySelectorAll('[data-league-group]');
+    const empty = document.getElementById('filtered-empty');
 
-{% empty %}
+    ['live', 'upcoming', 'finished'].forEach((status) => {
+        const count = Array.from(matches)
+            .filter((match) => match.dataset.status === status).length;
 
-<p>Новин поки немає.</p>
+        document.querySelector(`[data-count="${status}"]`).textContent = count;
+    });
 
-{% endfor %}
+    tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+            const filter = tab.dataset.filter;
+            let visibleMatches = 0;
+
+            tabs.forEach((item) => {
+                const active = item === tab;
+                item.classList.toggle('is-active', active);
+                item.setAttribute('aria-pressed', String(active));
+            });
+
+            matches.forEach((match) => {
+                const visible =
+                    filter === 'all' || match.dataset.status === filter;
+
+                match.hidden = !visible;
+
+                if (visible) {
+                    visibleMatches += 1;
+                }
+            });
+
+            groups.forEach((group) => {
+                group.hidden = !group.querySelector('.match:not([hidden])');
+            });
+
+            empty.hidden = visibleMatches !== 0;
+        });
+    });
+})();
+</script>
+</body>
+</html>
