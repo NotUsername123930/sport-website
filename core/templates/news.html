@@ -1,37 +1,109 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="uk">
 <head>
-    <title>{{ news.title }}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ news.title }} — JustSport</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
+<header class="site-header">
+    <a class="brand" href="{% url 'home' %}">JustSport<span>.</span></a>
 
-<h1>{{ news.title }}</h1>
+    <nav class="account-nav">
+        {% if user.is_authenticated %}
+            <span>Привіт, {{ user.username }}</span>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit">Вийти</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}">Увійти</a>
+            <a href="{% url 'register' %}">Реєстрація</a>
+        {% endif %}
+    </nav>
+</header>
 
-<p>
-    Дата:
-    {{ news.published_at|date:"d.m.Y H:i" }}
-</p>
+<main class="news-page">
+    <article class="news-article">
+        <p class="eyebrow">{{ news.source }}</p>
+        <h1>{{ news.title }}</h1>
 
-<p>
-    Джерело:
-    {{ news.source }}
-</p>
+        <p class="muted">
+            {{ news.published_at|date:"d.m.Y H:i" }}
+        </p>
 
-{% if news.image_url %}
-<img
-    src="{{ news.image_url }}"
-    alt="{{ news.title }}"
-    width="600"
->
-{% endif %}
+        {% if news.image_url %}
+            <img class="news-article-image"
+                 src="{{ news.image_url }}"
+                 alt="{{ news.title }}">
+        {% endif %}
 
-<p>
-    {{ news.description }}
-</p>
+        {% if news.description %}
+            <div class="news-description">
+                {{ news.description|linebreaks }}
+            </div>
+        {% else %}
+            <p class="muted">
+                Повний текст читай на сайті джерела.
+            </p>
+        {% endif %}
 
-<p>
-    <a href="/">← Назад на головну</a>
-</p>
+        <a class="hero-link"
+           href="{{ news.article_url }}"
+           target="_blank"
+           rel="noopener noreferrer">
+            Читати повну статтю →
+        </a>
+    </article>
 
+    <section class="comments-section" id="comments">
+        <h2>Коментарі ({{ comments|length }})</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p class="form-message">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+        {% if user.is_authenticated %}
+            <form class="comment-form"
+                  method="post"
+                  action="{% url 'post_comment' news.id %}">
+                {% csrf_token %}
+                {{ comment_form.text.label_tag }}
+                {{ comment_form.text }}
+                {{ comment_form.text.errors }}
+                <button class="date-submit" type="submit">
+                    Надіслати коментар
+                </button>
+            </form>
+        {% else %}
+            <p class="muted">
+                <a href="{% url 'login' %}?next={{ request.path }}#comments">
+                    Увійди
+                </a>
+                або
+                <a href="{% url 'register' %}">зареєструйся</a>,
+                щоб залишити коментар.
+            </p>
+        {% endif %}
+
+        <div class="comment-list">
+            {% for comment in comments %}
+                <article class="comment-item">
+                    <div class="comment-meta">
+                        <strong>{{ comment.author.username }}</strong>
+                        <time>{{ comment.created_at|date:"d.m.Y H:i" }}</time>
+                    </div>
+                    <p>{{ comment.text|linebreaksbr }}</p>
+                </article>
+            {% empty %}
+                <p class="muted">Коментарів поки немає.</p>
+            {% endfor %}
+        </div>
+    </section>
+</main>
 </body>
 </html>

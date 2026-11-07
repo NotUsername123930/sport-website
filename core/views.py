@@ -1,16 +1,16 @@
+from collections import defaultdict
 from datetime import date, timedelta
 
-from .models import Fixture, News, Posts
-from django.shortcuts import render, get_object_or_404
-from collections import defaultdict
+from django.contrib import messages
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.views.decorators.http import require_POST
 
-import os
-import requests
-from dotenv import load_dotenv
-
-load_dotenv()
-
-API_KEY = os.getenv("SPORT_API_KEY")
+from .forms import CommentForm
+from .models import Comment, Fixture, News, Posts
 
 
 def home_page(request):
@@ -126,16 +126,56 @@ def league_page(request, league_name):
 
 
 def news_page(request, news_id):
-
-    news = get_object_or_404(
-        News,
-        id=news_id
+    news = get_object_or_404(News, id=news_id)
+    comments = (
+        Comment.objects
+        .filter(news=news)
+        .select_related("author")
     )
 
-    return render(
-        request,
-        "news.html",
-        {
-            "news": news
-        }
+    return render(request, "news.html", {
+        "news": news,
+        "comments": comments,
+        "comment_form": CommentForm(),
+    })
+
+
+def register(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+
+        if form.is_valid():
+            user = form.save()
+            login(
+                request,
+                user,
+                backend="django.contrib.auth.backends.ModelBackend"
+            )
+            return redirect("home")
+    else:
+        form = UserCreationForm()
+
+    return render(request, "registration/register.html", {
+        "form": form,
+    })
+
+
+@login_required
+@require_POST
+def post_comment(request, news_id):
+    news = get_object_or_404(News, id=news_id)
+    form = CommentForm(request.POST)
+
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.news = news
+        comment.author = request.user
+        comment.save()
+        messages.success(request, "Коментар додано.")
+    else:
+        messages.error(request, "Напиши коментар перед відправленням.")
+
+    return redirect(
+        reverse("news_page", args=[news.id]) + "#comments"
     )
+

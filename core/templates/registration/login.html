@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вхід — JustSport</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<main class="auth-card">
+    <a class="brand" href="{% url 'home' %}">JustSport<span>.</span></a>
+    <h1>Вхід</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="hidden" name="next" value="{{ next }}">
+        <button class="date-submit" type="submit">Увійти</button>
+    </form>
+
+    <p class="muted">
+        Ще немає акаунта?
+        <a href="{% url 'register' %}">Зареєструватися</a>
+    </p>
+</main>
+</body>
+</html>

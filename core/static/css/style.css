@@ -655,3 +655,206 @@ input {
         padding: 0 7px;
     }
 }
+.account-nav {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.account-nav form {
+    display: inline;
+}
+
+.account-nav button {
+    padding: 7px 11px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--panel);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.news-page,
+.auth-card {
+    width: min(850px, calc(100% - 32px));
+    margin: 32px auto;
+}
+
+.news-article,
+.comments-section,
+.auth-card {
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: 15px;
+    background: var(--panel);
+}
+
+.news-article h1 {
+    margin: 8px 0 12px;
+    font-size: clamp(25px, 5vw, 40px);
+    line-height: 1.15;
+}
+
+.news-article-image {
+    display: block;
+    width: 100%;
+    max-height: 480px;
+    margin: 20px 0;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.news-description {
+    margin: 20px 0;
+    color: #d4dce2;
+    line-height: 1.8;
+}
+
+.comments-section {
+    margin-top: 20px;
+}
+
+.comments-section h2,
+.auth-card h1 {
+    margin-bottom: 18px;
+}
+
+.comment-form {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.comment-form textarea,
+.auth-card input {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #0f1419;
+    color: var(--text);
+}
+
+.comment-form textarea {
+    resize: vertical;
+}
+
+.comment-form button {
+    justify-self: start;
+}
+
+.comment-item {
+    padding: 15px 0;
+    border-top: 1px solid var(--line);
+}
+
+.comment-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 7px;
+}
+
+.comment-meta time {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.comment-item p {
+    color: #d4dce2;
+    overflow-wrap: anywhere;
+}
+
+.auth-card {
+    max-width: 460px;
+}
+
+.auth-card h1 {
+    margin-top: 20px;
+}
+
+.auth-card form p {
+    margin-bottom: 14px;
+}
+
+.auth-card form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.auth-card .helptext {
+    display: block;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.auth-card ul,
+.errorlist {
+    margin: 6px 0 12px 18px;
+    color: #ff9292;
+    font-size: 13px;
+}
+
+.auth-card .muted {
+    margin-top: 16px;
+}
+
+.site-header {
+    gap: 20px;
+}
+
+.account-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.account-nav form {
+    margin: 0;
+}
+
+.account-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 11px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--panel);
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.account-link:hover {
+    border-color: #60734b;
+    color: var(--lime);
+}
+
+.account-link svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.account-name {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+@media (max-width: 560px) {
+    .site-header > p {
+        display: none;
+    }
+
+    .account-nav {
+        margin-left: auto;
+    }
+}
