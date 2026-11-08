@@ -38,4 +38,6 @@ urlpatterns = [
         views.post_comment,
         name="post_comment",
     ),
+path("news/", views.news_archive, name="news_archive"),
+path("updates/", views.updates_archive, name="updates_archive"),
 ]

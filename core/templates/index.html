@@ -231,6 +231,9 @@
             {% else %}
                 <p class="muted">Оновлень поки немає.</p>
             {% endif %}
+            <a class="more-link" href="{% url 'updates_archive' %}">
+                Більше оновлень →
+            </a>
         </section>
 
         <section class="side-section">
@@ -252,6 +255,9 @@
             {% empty %}
                 <p class="muted">Новин поки немає.</p>
             {% endfor %}
+            <a class="more-link" href="{% url 'news_archive' %}">
+                Більше новин →
+            </a>
         </section>
     </aside>
 </div>

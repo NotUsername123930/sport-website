@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Усі новини — JustSport</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=3">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" href="{% url 'home' %}">JustSport<span>.</span></a>
+    <a class="more-link" href="{% url 'home' %}">← На головну</a>
+</header>
+
+<main class="archive-page">
+    <section class="section news-archive-panel">
+        <div class="archive-heading">
+            <div>
+                <span class="eyebrow">Архів</span>
+                <h1>Усі новини</h1>
+            </div>
+
+            <form class="archive-filter" method="get">
+                <label class="visually-hidden" for="league-filter">Фільтр за лігою</label>
+                <select id="league-filter" name="league">
+                    <option value="">Усі ліги</option>
+                    {% for league in league_filters %}
+                        <option value="{{ league.slug }}"
+                            {% if selected_league == league.slug %}selected{% endif %}>
+                            {{ league.label }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Фільтрувати</button>
+            </form>
+        </div>
+
+        <div class="news-results">
+            {% for news in page_obj %}
+                <article class="news-result">
+                    <div class="news-result-content">
+                        <p class="news-result-source">
+                            <span class="news-source-icon">{{ news.source|slice:":1"|upper }}</span>
+                            {{ news.source }}
+                            <span>· {{ news.published_at|date:"d.m.Y H:i" }}</span>
+                        </p>
+
+                        <h2>
+                            <a href="{% url 'news_page' news.id %}">{{ news.title }}</a>
+                        </h2>
+
+                        {% if news.description %}
+                            <p class="news-result-description">{{ news.description }}</p>
+                        {% endif %}
+
+                        <a class="more-link" href="{% url 'news_page' news.id %}">
+                            Детальніше →
+                        </a>
+                    </div>
+
+                    <a class="news-result-thumb" href="{% url 'news_page' news.id %}">
+                        {% if news.image_url %}
+                            <img src="{{ news.image_url }}"
+                                 alt="{{ news.title }}"
+                                 loading="lazy"
+                                 onerror="this.hidden=true">
+                        {% else %}
+                            <span aria-hidden="true">⚽</span>
+                        {% endif %}
+                    </a>
+                </article>
+            {% empty %}
+                <p class="muted archive-empty">За цим фільтром новин немає.</p>
+            {% endfor %}
+        </div>
+
+        <nav class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?{% if selected_league %}league={{ selected_league|urlencode }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">
+                    ← Новіші
+                </a>
+            {% endif %}
+
+            <span>Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_next %}
+                <a href="?{% if selected_league %}league={{ selected_league|urlencode }}&amp;{% endif %}page={{ page_obj.next_page_number }}">
+                    Старіші →
+                </a>
+            {% endif %}
+        </nav>
+    </section>
+</main>
+</body>
+</html>

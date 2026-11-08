@@ -1,6 +1,5 @@
 from collections import defaultdict
 from datetime import date, timedelta
-
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -8,9 +7,45 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
-
 from .forms import CommentForm
 from .models import Comment, Fixture, News, Posts
+from django.core.paginator import Paginator
+from django.db.models import Q
+
+NEWS_LEAGUE_FILTERS = {
+    "premier-league": {
+        "label": "Англійська Прем'єр-ліга",
+        "keywords": ["Premier League", "EPL"],
+    },
+    "la-liga": {
+        "label": "Іспанська Ла Ліга",
+        "keywords": ["La Liga"],
+    },
+    "serie-a": {
+        "label": "Італійська Серія А",
+        "keywords": ["Serie A"],
+    },
+    "bundesliga": {
+        "label": "Німецька Бундесліга",
+        "keywords": ["Bundesliga"],
+    },
+    "ligue-1": {
+        "label": "Французька Ліга 1",
+        "keywords": ["Ligue 1"],
+    },
+    "champions-league": {
+        "label": "Ліга чемпіонів УЄФА",
+        "keywords": ["Champions League"],
+    },
+    "europa-league": {
+        "label": "Ліга Європи УЄФА",
+        "keywords": ["Europa League"],
+    },
+    "conference-league": {
+        "label": "Ліга конференцій УЄФА",
+        "keywords": ["Conference League"],
+    },
+}
 
 
 def home_page(request):
@@ -157,6 +192,47 @@ def register(request):
 
     return render(request, "registration/register.html", {
         "form": form,
+    })
+
+def news_archive(request):
+    selected_league = request.GET.get("league", "")
+    news_queryset = News.objects.order_by("-published_at", "-id")
+
+    league_filter = NEWS_LEAGUE_FILTERS.get(selected_league)
+
+    if league_filter:
+        keyword_query = Q()
+
+        for keyword in league_filter["keywords"]:
+            keyword_query |= (
+                Q(title__icontains=keyword)
+                | Q(description__icontains=keyword)
+            )
+
+        news_queryset = news_queryset.filter(keyword_query)
+
+    page_obj = Paginator(news_queryset, 20).get_page(
+        request.GET.get("page")
+    )
+
+    return render(request, "news_archive.html", {
+        "page_obj": page_obj,
+        "selected_league": selected_league,
+        "league_filters": [
+            {"slug": slug, "label": data["label"]}
+            for slug, data in NEWS_LEAGUE_FILTERS.items()
+        ],
+    })
+
+
+def updates_archive(request):
+    page_obj = Paginator(
+        Posts.objects.filter(is_published=True).order_by("-created_at"),
+        20,
+    ).get_page(request.GET.get("page"))
+
+    return render(request, "updates_archive.html", {
+        "page_obj": page_obj,
     })
 
 

@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оновлення сайту — JustSport</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=3">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" href="{% url 'home' %}">JustSport<span>.</span></a>
+    <a class="more-link" href="{% url 'home' %}">← На головну</a>
+</header>
+
+<main class="archive-page">
+    <section class="section news-archive-panel">
+        <span class="eyebrow">JustSport</span>
+        <h1>Оновлення сайту</h1>
+
+        <div class="archive-list">
+            {% for post in page_obj %}
+                <article class="update-card">
+                    <p class="muted">{{ post.created_at|date:"d.m.Y H:i" }}</p>
+                    <h2>{{ post.title }}</h2>
+                    <div>{{ post.description|linebreaks }}</div>
+                </article>
+            {% empty %}
+                <p class="muted">Оновлень поки немає.</p>
+            {% endfor %}
+        </div>
+
+        <nav class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">← Новіші</a>
+            {% endif %}
+
+            <span>Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Старіші →</a>
+            {% endif %}
+        </nav>
+    </section>
+</main>
+</body>
+</html>
