@@ -78,3 +78,11 @@ Traceback (most recent call last):
     return codecs.charmap_encode(input,self.errors,encoding_table)[0]
            ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 UnicodeEncodeError: 'charmap' codec can't encode characters in position 0-8: character maps to <undefined>
+Traceback (most recent call last):
+  File "C:\Users\dmytr\PycharmProjects\PythonProject15\news_import.py", line 76, in <module>
+    print(f"\u0417\u0431\u0435\u0440\u0435\u0436\u0435\u043d\u043e \u043d\u043e\u0432\u0438\u043d: {saved_news}")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dmytr\AppData\Local\Programs\Python\Python314\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 0-8: character maps to <undefined>

@@ -366,3 +366,85 @@ Traceback (most recent call last):
     return codecs.charmap_encode(input,self.errors,encoding_table)[0]
            ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 UnicodeEncodeError: 'charmap' codec can't encode characters in position 0-8: character maps to <undefined>
+Traceback (most recent call last):
+  File "C:\Users\dmytr\PycharmProjects\PythonProject15\main.py", line 42, in <module>
+    print("\u041e\u0442\u0440\u0438\u043c\u0430\u043d\u043d\u044f \u043c\u0430\u0442\u0447\u0456\u0432...")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dmytr\AppData\Local\Programs\Python\Python314\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 0-8: character maps to <undefined>
+Traceback (most recent call last):
+  File "C:\Users\dmytr\PycharmProjects\PythonProject15\main.py", line 42, in <module>
+    print("\u041e\u0442\u0440\u0438\u043c\u0430\u043d\u043d\u044f \u043c\u0430\u0442\u0447\u0456\u0432...")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dmytr\AppData\Local\Programs\Python\Python314\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 0-8: character maps to <undefined>
+Traceback (most recent call last):
+  File "C:\Users\dmytr\PycharmProjects\PythonProject15\main.py", line 42, in <module>
+    print("\u041e\u0442\u0440\u0438\u043c\u0430\u043d\u043d\u044f \u043c\u0430\u0442\u0447\u0456\u0432...")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dmytr\AppData\Local\Programs\Python\Python314\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 0-8: character maps to <undefined>
+Traceback (most recent call last):
+  File "C:\Users\dmytr\PycharmProjects\PythonProject15\main.py", line 9, in <module>
+    django.setup()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\dmytr\PycharmProjects\PythonProject15\.venv\Lib\site-packages\django\__init__.py", line 19, in setup
+    configure_logging(settings.LOGGING_CONFIG, settings.LOGGING)
+                      ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dmytr\PycharmProjects\PythonProject15\.venv\Lib\site-packages\django\conf\__init__.py", line 122, in __getattr__
+    self._setup(name)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\dmytr\PycharmProjects\PythonProject15\.venv\Lib\site-packages\django\conf\__init__.py", line 109, in _setup
+    self._wrapped = Settings(settings_module)
+                    ~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\dmytr\PycharmProjects\PythonProject15\.venv\Lib\site-packages\django\conf\__init__.py", line 253, in __init__
+    mod = importlib.import_module(self.SETTINGS_MODULE)
+  File "C:\Users\dmytr\AppData\Local\Programs\Python\Python314\Lib\importlib\__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1406, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1371, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1342, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 938, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 759, in exec_module
+  File "<frozen importlib._bootstrap>", line 491, in _call_with_frames_removed
+  File "C:\Users\dmytr\PycharmProjects\PythonProject15\football_hub\settings.py", line 25, in <module>
+    SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+                 ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 709, in __getitem__
+KeyError: 'DJANGO_SECRET_KEY'
+Traceback (most recent call last):
+  File "C:\Users\dmytr\PycharmProjects\PythonProject15\main.py", line 9, in <module>
+    django.setup()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\dmytr\PycharmProjects\PythonProject15\.venv\Lib\site-packages\django\__init__.py", line 19, in setup
+    configure_logging(settings.LOGGING_CONFIG, settings.LOGGING)
+                      ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dmytr\PycharmProjects\PythonProject15\.venv\Lib\site-packages\django\conf\__init__.py", line 122, in __getattr__
+    self._setup(name)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\dmytr\PycharmProjects\PythonProject15\.venv\Lib\site-packages\django\conf\__init__.py", line 109, in _setup
+    self._wrapped = Settings(settings_module)
+                    ~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\dmytr\PycharmProjects\PythonProject15\.venv\Lib\site-packages\django\conf\__init__.py", line 253, in __init__
+    mod = importlib.import_module(self.SETTINGS_MODULE)
+  File "C:\Users\dmytr\AppData\Local\Programs\Python\Python314\Lib\importlib\__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1406, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1371, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1342, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 938, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 759, in exec_module
+  File "<frozen importlib._bootstrap>", line 491, in _call_with_frames_removed
+  File "C:\Users\dmytr\PycharmProjects\PythonProject15\football_hub\settings.py", line 25, in <module>
+    SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+                 ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 709, in __getitem__
+KeyError: 'DJANGO_SECRET_KEY'
